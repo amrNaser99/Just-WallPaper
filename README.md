@@ -1,4 +1,4 @@
-# justwallpaper
+# just Wallpaper
 
 A new Flutter project.
 
