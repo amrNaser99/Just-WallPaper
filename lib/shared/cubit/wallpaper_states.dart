@@ -5,7 +5,23 @@ abstract class WallPaperStates {}
 class WallPaperInitialState extends WallPaperStates {}
 
 class CuratedLoadingState extends WallPaperStates {}
+class PopularPhotoLoadingState extends WallPaperStates {}
+class PopularPhotoSuccessState extends WallPaperStates {}
+class PopularPhotoErrorState extends WallPaperStates {
+  final error;
+
+  PopularPhotoErrorState(this.error);
+}
 class WallPaperDownloadState extends WallPaperStates {}
+
+
+class WallPaperSearchLoadingState extends WallPaperStates {}
+class WallPaperSearchSuccessState extends WallPaperStates {}
+class WallPaperSearchErrorState extends WallPaperStates {
+  final String error;
+  WallPaperSearchErrorState(this.error);
+}
+
 class isScreenWallPaperSetState extends WallPaperStates {}
 class isLockWallPaperSetState extends WallPaperStates {}
 class isBothWallPaperSetState extends WallPaperStates {}
@@ -57,4 +73,8 @@ class ShareWallPaperFileSuccessState extends WallPaperStates {}
 class ShareWallPaperFileErrorState extends WallPaperStates {
   final String error;
   ShareWallPaperFileErrorState(this.error);
+}
+class ChangeTabState extends WallPaperStates {
+  final int index;
+  ChangeTabState(this.index);
 }

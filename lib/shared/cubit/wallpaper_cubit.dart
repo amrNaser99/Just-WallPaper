@@ -14,23 +14,24 @@ import '../components/constants.dart';
 class WallPaperCubit extends Cubit<WallPaperStates> {
   var isWallpaperDownloaded;
 
+  var currentIndex = 0;
 
   WallPaperCubit() : super(WallPaperInitialState());
+
 
   static WallPaperCubit get(context) => BlocProvider.of(context);
 
   CuratedModel? curatedModel;
   List<Photos> wallPaperList = [];
-  List<Photos> moreWallPaperList = [];
+  List<Photos> searchWallpaperList = [];
 
-  int page = Random().nextInt(100) + 1;
+  int page = Random().nextInt(200) + 1;
 
   Future<void> getCurated() async {
     emit(CuratedLoadingState());
 
     await DioHelper.getData(
       url:
-          // baseURL+CURATED,
           curated + page.toString(),
       token: token,
     ).then(
@@ -49,8 +50,9 @@ class WallPaperCubit extends Cubit<WallPaperStates> {
       emit(CuratedErrorState(error));
     });
   }
-
+  
   bool isLoaded = false;
+  bool isSearchClicked = false;
 
   Future<bool> loadMoreWallPapers() async {
     emit(WallPaperLoadMoreLoadingState());
@@ -79,6 +81,23 @@ class WallPaperCubit extends Cubit<WallPaperStates> {
     return isLoaded;
   }
 
+  void SearchWallPaper(String text) async {
+    emit(WallPaperSearchLoadingState());
+
+    await DioHelper.searchPhotos(
+      url: searchUrl,
+      query: {
+        'query': text.toString(),
+      },
+    ).then((value) {
+      print(value.data);
+      searchWallpaperList = CuratedModel.fromJson(value.data).photos!;
+      emit(WallPaperSearchSuccessState());
+    }).catchError((error) {
+      emit(WallPaperSearchErrorState(error));
+    });
+  }
+
   bool isDownloaded = false;
   bool isScreenWallPaperSet = false;
   bool isLockWallPaperSet = false;
@@ -88,12 +107,14 @@ class WallPaperCubit extends Cubit<WallPaperStates> {
     isScreenWallPaperSet = !isScreenWallPaperSet;
     emit(isScreenWallPaperSetState());
   }
+
   void isLockWallPaperSetLoading() {
     isLockWallPaperSet = !isLockWallPaperSet;
     emit(isLockWallPaperSetState());
   }
-void isBothWallPaperSetLoading() {
-  isBothWallPaperSet = !isBothWallPaperSet;
+
+  void isBothWallPaperSetLoading() {
+    isBothWallPaperSet = !isBothWallPaperSet;
     emit(isBothWallPaperSetState());
   }
 
@@ -101,7 +122,6 @@ void isBothWallPaperSetLoading() {
     isDownloaded = !isDownloaded;
     emit(WallPaperDownloadState());
   }
-
 
   void downloadInMediaFile(BuildContext context, Photos photo) async {
     emit(WallPaperDownloadInMediaFileLoadingState());
@@ -111,8 +131,7 @@ void isBothWallPaperSetLoading() {
       photo.src!.portrait!,
       toDcim: true,
       albumName: 'Just Wallpaper',
-    )
-        .then((value) {
+    ).then((value) {
       emit(WallPaperDownloadInMediaFileSuccessState());
       isDownloadToMediaFileLoading();
       print('Image Saved');
@@ -137,7 +156,7 @@ void isBothWallPaperSetLoading() {
     print(photo.src!.original!);
 
     var cachedImage = await DefaultCacheManager()
-    //TODO port or original url
+        //TODO port or original url
         .getSingleFile(photo.src!.portrait!); //image file
 
     int location = WallpaperManagerFlutter.HOME_SCREEN;
@@ -195,7 +214,7 @@ void isBothWallPaperSetLoading() {
 
   void shareWallPaperFile(Photos photo) async {
     emit(ShareWallPaperFileLoadingState());
-    
+
     var cachedImage = await DefaultCacheManager()
         .getSingleFile(photo.src!.portrait!); //image file
 
@@ -211,5 +230,17 @@ void isBothWallPaperSetLoading() {
       emit(ShareWallPaperFileErrorState(error));
       print(error.toString());
     });
+  }
+
+
+  List tabs = [
+    'Main',
+    'Popular',
+    'Favorites',
+    'Collections',
+  ];
+  void changeTab(int index) {
+    currentIndex = index;
+    emit(ChangeTabState(index));
   }
 }
