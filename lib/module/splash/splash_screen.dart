@@ -1,11 +1,12 @@
+import 'package:conditional_builder_null_safety/example/example.dart';
 import 'package:easy_splash_screen/easy_splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:justwallpaper/module/home_screen.dart';
 import 'package:justwallpaper/shared/cubit/wallpaper_cubit.dart';
 import 'package:justwallpaper/shared/cubit/wallpaper_states.dart';
 import 'package:justwallpaper/shared/styles/colors.dart';
-import '../../main.dart';
-import '../../shared/components/constants.dart';
+import 'package:justwallpaper/shared/styles/themes.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({Key? key}) : super(key: key);
@@ -25,6 +26,9 @@ class SplashScreenState extends State<SplashScreen> {
           WallPaperCubit cubit = BlocProvider.of<WallPaperCubit>(context);
           return MaterialApp(
             debugShowCheckedModeBanner: false,
+            theme: lightTheme,
+            title: 'Just WallPaper',
+            themeMode: ThemeMode.light,
             home: Scaffold(
               extendBodyBehindAppBar: true,
               body: EasySplashScreen(
@@ -43,7 +47,7 @@ class SplashScreenState extends State<SplashScreen> {
                 ),
                 showLoader: true,
                 loaderColor: Colors.white,
-                navigator: MyApp(),
+                navigator: HomeScreen(),
               ),
             ),
           );

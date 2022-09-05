@@ -10,13 +10,48 @@ import 'package:justwallpaper/shared/styles/colors.dart';
 import 'package:justwallpaper/shared/styles/icon_broken.dart';
 import 'package:justwallpaper/shared/utils/size_config.dart';
 
-defaultAppBar(BuildContext context, bool innerBoxIsScrolled) => SliverAppBar(
+// Container(
+// padding: EdgeInsetsDirectional.only(start: 10, end: 10),
+// height: 24,
+// child: ListView.separated(
+// scrollDirection: Axis.horizontal,
+// itemBuilder: (context, index) => InkWell(
+// onTap: () {
+// WallPaperCubit.get(context).changeTab(index);
+// },
+// child: Container(
+// width: SizeConfig.screenWidth! / 3,
+// height: 20,
+// decoration: BoxDecoration(
+// color: WallPaperCubit.get(context).currentIndex == index
+// ? colorPrimary
+//     : Colors.grey[800]!.withOpacity(0.2),
+// borderRadius: BorderRadius.circular(10),
+// ),
+// child: Center(
+// child: Text(
+// WallPaperCubit.get(context).tabs[index],
+// style: TextStyle(
+// color: Colors.white,
+// fontSize: 16,
+// ),
+// ),
+// ),
+// ),
+// ),
+// separatorBuilder: (context, index) => SizedBox(
+// width: 8,
+// ),
+// itemCount: WallPaperCubit.get(context).tabs.length,
+// ),
+// )
+
+defaultAppBar(BuildContext context, bool innerBoxIsScrolled, List<Widget> tabs,
+        WallPaperCubit cubit) =>
+    SliverAppBar(
       centerTitle: true,
       floating: true,
       pinned: true,
-      snap: true,
-      forceElevated: innerBoxIsScrolled,
-      expandedHeight: 100,
       title: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -31,71 +66,56 @@ defaultAppBar(BuildContext context, bool innerBoxIsScrolled) => SliverAppBar(
           Text(
             'WallPaper',
             style: TextStyle(
-                color: colorLight,
-                // Colors.white70,
-                fontSize: 18,
-                fontWeight: FontWeight.bold),
+                color: colorLight, fontSize: 18, fontWeight: FontWeight.bold),
           ),
         ],
       ),
       actions: [
-        IconButton(
-          padding: EdgeInsetsDirectional.only(
-            end: 20,
-          ),
-          onPressed: () {},
-          icon: Icon(
-            IconBroken.Search,
-            color: whiteColor,
-            size: 25,
-          ),
-        ),
-      ],
-      bottom: PreferredSize(
-        preferredSize: Size.fromHeight(20),
-        child: Container(
-          padding: EdgeInsetsDirectional.only(start: 10, end: 10),
-          height: 24,
-          child: ListView.separated(
-            scrollDirection: Axis.horizontal,
-            itemBuilder: (context, index) => InkWell(
-              onTap: () {
-                WallPaperCubit.get(context).changeTab(index);
-              },
-              child: Container(
-                width: SizeConfig.screenWidth! / 3,
-                height: 20,
-                decoration: BoxDecoration(
-                  color: WallPaperCubit.get(context).currentIndex == index
-                      ? colorPrimary
-                      : Colors.grey[800]!.withOpacity(0.2),
-                  borderRadius: BorderRadius.circular(10),
+        cubit.isSearchClicked
+            ? IconButton(
+                padding: EdgeInsetsDirectional.only(
+                  end: 20,
                 ),
-                child: Center(
-                  child: Text(
-                    WallPaperCubit.get(context).tabs[index],
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 16,
-                    ),
-                  ),
+                onPressed: () {
+                  cubit.changeSearchbarClicked();
+                },
+                icon: Icon(
+                  IconBroken.Arrow___Up_2,
+                  color: whiteColor,
+                  size: 25,
+                ),
+              )
+            : IconButton(
+                padding: EdgeInsetsDirectional.only(
+                  end: 20,
+                ),
+                onPressed: () {
+                  cubit.changeSearchbarClicked();
+                },
+                icon: Icon(
+                  IconBroken.Search,
+                  color: whiteColor,
+                  size: 25,
                 ),
               ),
+      ],
+      bottom: cubit.isSearchClicked
+          ? PreferredSize(
+              child: searchBar(context),
+              preferredSize: Size.fromHeight(
+                50,
+              ),
+            )
+          : TabBar(
+         tabs: tabs,
+
+              labelPadding: EdgeInsetsDirectional.only(
+                start: 10,
+                end: 10,
+              ),
+              physics: const BouncingScrollPhysics(),
+              indicatorColor: colorPrimary,
             ),
-            separatorBuilder: (context, index) => SizedBox(
-              width: 8,
-            ),
-            itemCount: WallPaperCubit.get(context).tabs.length,
-          ),
-        ),
-        // Column(
-        //   children: [
-        //     searchBar(context),
-        //
-        //
-        //   ],
-        // ),
-      ),
     );
 
 Widget searchBar(BuildContext context) {

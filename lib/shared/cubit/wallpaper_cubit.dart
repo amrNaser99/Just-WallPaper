@@ -18,7 +18,6 @@ class WallPaperCubit extends Cubit<WallPaperStates> {
 
   WallPaperCubit() : super(WallPaperInitialState());
 
-
   static WallPaperCubit get(context) => BlocProvider.of(context);
 
   CuratedModel? curatedModel;
@@ -31,8 +30,7 @@ class WallPaperCubit extends Cubit<WallPaperStates> {
     emit(CuratedLoadingState());
 
     await DioHelper.getData(
-      url:
-          curated + page.toString(),
+      url: curated + page.toString(),
       token: token,
     ).then(
       (value) {
@@ -50,7 +48,7 @@ class WallPaperCubit extends Cubit<WallPaperStates> {
       emit(CuratedErrorState(error));
     });
   }
-  
+
   bool isLoaded = false;
   bool isSearchClicked = false;
 
@@ -232,15 +230,35 @@ class WallPaperCubit extends Cubit<WallPaperStates> {
     });
   }
 
-
-  List tabs = [
-    'Main',
-    'Popular',
-    'Favorites',
-    'Collections',
+  List<Widget> tabs = [
+    Tab(
+      text: 'Main',
+    ),
+    Tab(
+      text: 'Search',
+    ),
+    Tab(
+      text: 'Favorites',
+    ),
+    Tab(
+      text: 'Collections',
+    ),
   ];
+
+  // List tabs = [
+  //   'Main',
+  //   'Popular',
+  //   'Favorites',
+  //   'Collections',
+  // ];
   void changeTab(int index) {
     currentIndex = index;
     emit(ChangeTabState(index));
+  }
+
+  void changeSearchbarClicked() {
+    isSearchClicked = !isSearchClicked;
+    debugPrint('isSearchClicked ${isSearchClicked}');
+    emit(WallPaperSearchSuccessState());
   }
 }
