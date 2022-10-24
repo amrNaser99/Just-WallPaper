@@ -5,24 +5,31 @@ import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:flutter_share/flutter_share.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:gallery_saver/gallery_saver.dart';
-import 'package:justwallpaper/model/curated_model.dart';
-import 'package:justwallpaper/shared/cubit/wallpaper_states.dart';
-import 'package:justwallpaper/shared/network/remote/dio_helper.dart';
+import 'package:justwallpaper/home/data/models/photos_model.dart';
+import 'package:justwallpaper/home/presentation/cubit/wallpaper_states.dart';
+import 'package:justwallpaper/home/presentation/widgets/favourite_widget.dart';
+import 'package:justwallpaper/home/presentation/widgets/search_widget.dart';
 import 'package:wallpaper_manager_flutter/wallpaper_manager_flutter.dart';
-import '../components/constants.dart';
+
+import '../../../core/app_const.dart';
+import '../../../core/services/remote/dio_helper.dart';
+import '../../data/models/curated_model.dart';
+import '../widgets/collection_widget.dart';
+import '../widgets/main_widget.dart';
 
 class WallPaperCubit extends Cubit<WallPaperStates> {
-  var isWallpaperDownloaded;
-
-  var currentIndex = 0;
-
   WallPaperCubit() : super(WallPaperInitialState());
 
   static WallPaperCubit get(context) => BlocProvider.of(context);
 
+  var isWallpaperDownloaded;
+  var currentIndex = 0;
+
   CuratedModel? curatedModel;
-  List<Photos> wallPaperList = [];
-  List<Photos> searchWallpaperList = [];
+  List<PhotosModel> wallPaperList = [];
+  List<PhotosModel> searchWallpaperList = [];
+  List<PhotosModel> favouriteWallpaperList = [];
+  TextEditingController searchController = TextEditingController();
 
   int page = Random().nextInt(200) + 1;
 
@@ -42,7 +49,7 @@ class WallPaperCubit extends Cubit<WallPaperStates> {
         print('------------------------------------');
         print('nextPage :${curatedModel!.nextPage}');
 
-        emit(CuratedSuccessState());
+        emit(CuratedSuccessState(curatedModel!));
       },
     ).catchError((error) {
       emit(CuratedErrorState(error));
@@ -121,7 +128,7 @@ class WallPaperCubit extends Cubit<WallPaperStates> {
     emit(WallPaperDownloadState());
   }
 
-  void downloadInMediaFile(BuildContext context, Photos photo) async {
+  void downloadInMediaFile(BuildContext context, PhotosModel photo) async {
     emit(WallPaperDownloadInMediaFileLoadingState());
     isDownloadToMediaFileLoading();
 
@@ -147,14 +154,13 @@ class WallPaperCubit extends Cubit<WallPaperStates> {
     });
   }
 
-  void setHomeWallPaper(Photos photo) async {
+  void setHomeWallPaper(PhotosModel photo) async {
     emit(WallPaperSetHomeWallpaperLoadingState());
     isScreenWallPaperSetLoading();
     print('photo.src!.original!');
     print(photo.src!.original!);
 
     var cachedImage = await DefaultCacheManager()
-        //TODO port or original url
         .getSingleFile(photo.src!.portrait!); //image file
 
     int location = WallpaperManagerFlutter.HOME_SCREEN;
@@ -171,7 +177,7 @@ class WallPaperCubit extends Cubit<WallPaperStates> {
     });
   }
 
-  void setLockWallPaper(Photos photo) async {
+  void setLockWallPaper(PhotosModel photo) async {
     emit(WallPaperSetLockWallpaperLoadingState());
     isLockWallPaperSetLoading();
     var cachedImage = await DefaultCacheManager()
@@ -191,7 +197,7 @@ class WallPaperCubit extends Cubit<WallPaperStates> {
     });
   }
 
-  void setBothWallPaper(Photos photo) async {
+  void setBothWallPaper(PhotosModel photo) async {
     emit(WallPaperSetBothWallpaperLoadingState());
     isBothWallPaperSetLoading();
     var cachedImage = await DefaultCacheManager()
@@ -210,7 +216,7 @@ class WallPaperCubit extends Cubit<WallPaperStates> {
     });
   }
 
-  void shareWallPaperFile(Photos photo) async {
+  void shareWallPaperFile(PhotosModel photo) async {
     emit(ShareWallPaperFileLoadingState());
 
     var cachedImage = await DefaultCacheManager()
@@ -235,24 +241,22 @@ class WallPaperCubit extends Cubit<WallPaperStates> {
       text: 'Main',
     ),
     Tab(
-      text: 'Search',
-    ),
-    Tab(
       text: 'Favorites',
     ),
-    Tab(
-      text: 'Collections',
-    ),
+    // Tab(
+    //   text: 'Collections',
+    // ),
   ];
 
-  // List tabs = [
-  //   'Main',
-  //   'Popular',
-  //   'Favorites',
-  //   'Collections',
-  // ];
+  List<Widget> tabWidgets = [
+    MainWidget(),
+    FavouriteWidget(),
+    SearchWidget(),
+    // CollectionWidget(),
+  ];
+
   void changeTab(int index) {
-    currentIndex = index;
+    isSearchClicked == true ? currentIndex = 2 : currentIndex = index;
     emit(ChangeTabState(index));
   }
 
@@ -260,5 +264,18 @@ class WallPaperCubit extends Cubit<WallPaperStates> {
     isSearchClicked = !isSearchClicked;
     debugPrint('isSearchClicked ${isSearchClicked}');
     emit(WallPaperSearchSuccessState());
+  }
+
+  Widget tabViewChange(int index) {
+    switch (index) {
+      case 0:
+        return MainWidget();
+      case 1:
+        return FavouriteWidget();
+      case 2:
+        return SearchWidget();
+      default:
+        return Container();
+    }
   }
 }

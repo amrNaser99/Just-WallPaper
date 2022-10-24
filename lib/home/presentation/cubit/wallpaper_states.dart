@@ -1,4 +1,5 @@
-import 'package:justwallpaper/model/curated_model.dart';
+
+import '../../data/models/curated_model.dart';
 
 abstract class WallPaperStates {}
 
@@ -53,7 +54,11 @@ class WallPaperSetBothWallpaperErrorState extends WallPaperStates {
   WallPaperSetBothWallpaperErrorState(this.error);
 }
 
-class CuratedSuccessState extends WallPaperStates {}
+class CuratedSuccessState extends WallPaperStates {
+  final CuratedModel WallPaperList;
+
+  CuratedSuccessState(this.WallPaperList);
+}
 class CuratedErrorState extends WallPaperStates {
   final String error;
 
@@ -77,4 +82,6 @@ class ShareWallPaperFileErrorState extends WallPaperStates {
 class ChangeTabState extends WallPaperStates {
   final int index;
   ChangeTabState(this.index);
+}
+class ChangeTabViewState extends WallPaperStates {
 }

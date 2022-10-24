@@ -2,11 +2,12 @@ import 'package:conditional_builder_null_safety/example/example.dart';
 import 'package:easy_splash_screen/easy_splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:justwallpaper/module/home_screen.dart';
-import 'package:justwallpaper/shared/cubit/wallpaper_cubit.dart';
-import 'package:justwallpaper/shared/cubit/wallpaper_states.dart';
+import 'package:justwallpaper/home/presentation/cubit/wallpaper_cubit.dart';
 import 'package:justwallpaper/shared/styles/colors.dart';
 import 'package:justwallpaper/shared/styles/themes.dart';
+
+import '../../cubit/wallpaper_states.dart';
+import '../home/home_screen.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({Key? key}) : super(key: key);
@@ -18,12 +19,20 @@ class SplashScreen extends StatefulWidget {
 class SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
+    return BlocProvider<WallPaperCubit>(
       create: (context) => WallPaperCubit()..getCurated(),
       child: BlocConsumer<WallPaperCubit, WallPaperStates>(
-        listener: (BuildContext context, state) {},
+        listener:  (context, state) {
+        //   if (state is CuratedSuccessState) {
+        //     Navigator.pushReplacement(
+        //       context,
+        //       MaterialPageRoute(
+        //         builder: (context) => const HomeScreen(),
+        //       ),
+        //     );
+        //   }
+        },
         builder: (BuildContext context, state) {
-          WallPaperCubit cubit = BlocProvider.of<WallPaperCubit>(context);
           return MaterialApp(
             debugShowCheckedModeBanner: false,
             theme: lightTheme,

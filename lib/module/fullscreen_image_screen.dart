@@ -1,15 +1,14 @@
 import 'package:conditional_builder_null_safety/conditional_builder_null_safety.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:justwallpaper/model/curated_model.dart';
-import 'package:justwallpaper/shared/components/constants.dart';
+import 'package:justwallpaper/home/data/models/photos_model.dart';
 import 'package:justwallpaper/shared/components/components.dart';
-import 'package:justwallpaper/shared/cubit/wallpaper_cubit.dart';
-import 'package:justwallpaper/shared/cubit/wallpaper_states.dart';
 import 'package:justwallpaper/shared/styles/icon_broken.dart';
+import '../home/presentation/cubit/wallpaper_cubit.dart';
+import '../home/presentation/cubit/wallpaper_states.dart';
 
 class FullScreenImageScreen extends StatefulWidget {
-  final Photos photo;
+  final PhotosModel photo;
 
   FullScreenImageScreen({required this.photo});
 
@@ -55,7 +54,7 @@ class _FullScreenImageScreenState extends State<FullScreenImageScreen> {
                                     color: Colors.white,
                                   ),
                                   onPressed: () async {
-                                    printFullText('Favorite Clicked');
+                                    debugPrint('Favorite Clicked');
                                   },
                                 ),
                               ),
